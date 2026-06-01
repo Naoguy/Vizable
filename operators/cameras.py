@@ -1,5 +1,6 @@
 import bpy
 from ..utils.collections import ensure_collection, move_to_collection
+from ..utils.constraints import bake_and_remove_constraint
 from .empties import TRACK_CONSTRAINT_NAME
 
 CAMERAS_COLLECTION = "Vizable Cameras"
@@ -104,9 +105,7 @@ class VIZABLE_OT_camera_clear_tracking(bpy.types.Operator):
         cam_obj = context.scene.camera
         if cam_obj is None:
             return {'CANCELLED'}
-        con = cam_obj.constraints.get(TRACK_CONSTRAINT_NAME)
-        if con:
-            cam_obj.constraints.remove(con)
+        bake_and_remove_constraint(cam_obj, TRACK_CONSTRAINT_NAME)
         return {'FINISHED'}
 
 
@@ -125,7 +124,34 @@ class VIZABLE_OT_camera_clear_dof(bpy.types.Operator):
         return {'FINISHED'}
 
 
+class VIZABLE_OT_camera_rename(bpy.types.Operator):
+    """Rename this camera"""
+    bl_idname = "vizable.camera_rename"
+    bl_label = "Rename Camera"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    camera_name: bpy.props.StringProperty()
+    new_name: bpy.props.StringProperty(name="Name")
+
+    def invoke(self, context, event):
+        obj = bpy.data.objects.get(self.camera_name)
+        if obj:
+            self.new_name = obj.name
+        return context.window_manager.invoke_props_dialog(self)
+
+    def draw(self, context):
+        self.layout.prop(self, "new_name", text="Name")
+
+    def execute(self, context):
+        obj = bpy.data.objects.get(self.camera_name)
+        if obj and obj.type == 'CAMERA':
+            obj.name = self.new_name
+            obj.data.name = self.new_name
+        return {'FINISHED'}
+
+
 classes = [
+    VIZABLE_OT_camera_rename,
     VIZABLE_OT_camera_new,
     VIZABLE_OT_camera_set_active,
     VIZABLE_OT_camera_delete,

@@ -47,6 +47,8 @@ class VIZABLE_PT_cameras(bpy.types.Panel):
             )
             op.camera_name = cam_obj.name
 
+        op = row.operator("vizable.camera_rename", text="", icon='OUTLINER_DATA_GP_LAYER', emboss=False)
+        op.camera_name = cam_obj.name
         op = row.operator("vizable.camera_delete", text="", icon='X', emboss=False)
         op.camera_name = cam_obj.name
 
@@ -67,6 +69,12 @@ class VIZABLE_PT_cameras(bpy.types.Panel):
         col = box.column(align=True)
         col.label(text="Aspect Ratio")
         col.prop(cam.vizable, "aspect_preset", text="")
+        # Show the resolved render resolution so the user sees the effect
+        scene = context.scene
+        col.label(
+            text=f"{scene.render.resolution_x} × {scene.render.resolution_y} px",
+            icon='INFO',
+        )
 
         box.separator(factor=0.5)
 

@@ -12,15 +12,25 @@ class VIZABLE_OT_place_empty(bpy.types.Operator):
 
     purpose: bpy.props.StringProperty(default='track')  # 'track' or 'dof'
 
+    # Optional: name of the object to attach to.
+    # If empty, falls back to context.scene.camera (camera panel behaviour).
+    target_object_name: bpy.props.StringProperty(default='')
+
     def invoke(self, context, event):
         if context.area.type != 'VIEW_3D':
             self.report({'ERROR'}, "Must be used from the 3D viewport")
             return {'CANCELLED'}
 
-        self._camera_obj = context.scene.camera
-        if self._camera_obj is None:
-            self.report({'ERROR'}, "No active camera in scene")
-            return {'CANCELLED'}
+        if self.target_object_name:
+            self._target_obj = bpy.data.objects.get(self.target_object_name)
+            if self._target_obj is None:
+                self.report({'ERROR'}, f"Object '{self.target_object_name}' not found")
+                return {'CANCELLED'}
+        else:
+            self._target_obj = context.scene.camera
+            if self._target_obj is None:
+                self.report({'ERROR'}, "No active camera in scene")
+                return {'CANCELLED'}
 
         context.window_manager.modal_handler_add(self)
         context.area.header_text_set("Click to place target  |  Esc to cancel")
@@ -52,9 +62,9 @@ class VIZABLE_OT_place_empty(bpy.types.Operator):
         return location if hit else origin + direction * 2.0
 
     def _create_empty(self, context, location):
-        cam_name = self._camera_obj.name
+        target_name = self._target_obj.name
         label = "DOF" if self.purpose == 'dof' else "Track"
-        empty_name = f"Vizable {label} — {cam_name}"
+        empty_name = f"Vizable {label} — {target_name}"
 
         bpy.ops.object.select_all(action='DESELECT')
         bpy.ops.object.empty_add(type='SPHERE', radius=0.05, location=location)
@@ -63,17 +73,16 @@ class VIZABLE_OT_place_empty(bpy.types.Operator):
         return empty
 
     def _assign(self, empty):
-        cam_obj = self._camera_obj
-        cam_data = cam_obj.data
+        target = self._target_obj
 
-        if self.purpose == 'dof':
-            cam_data.dof.focus_object = empty
-            cam_data.dof.use_dof = True
+        if self.purpose == 'dof' and target.type == 'CAMERA':
+            target.data.dof.focus_object = empty
+            target.data.dof.use_dof = True
 
         elif self.purpose == 'track':
-            con = cam_obj.constraints.get(TRACK_CONSTRAINT_NAME)
+            con = target.constraints.get(TRACK_CONSTRAINT_NAME)
             if con is None:
-                con = cam_obj.constraints.new('TRACK_TO')
+                con = target.constraints.new('TRACK_TO')
                 con.name = TRACK_CONSTRAINT_NAME
             con.target = empty
             con.track_axis = 'TRACK_NEGATIVE_Z'
