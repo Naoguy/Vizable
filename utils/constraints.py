@@ -18,10 +18,18 @@ def bake_and_remove_constraint(obj: bpy.types.Object, constraint_name: str) -> b
     depsgraph = bpy.context.evaluated_depsgraph_get()
     baked_matrix = obj.evaluated_get(depsgraph).matrix_world.copy()
 
+    # Hold a reference to the target empty before the constraint is gone
+    target_empty = con.target
+
     # Remove the constraint
     obj.constraints.remove(con)
 
     # Restore orientation — matrix_world setter decomposes into local space,
     # correctly accounting for any parent transform
     obj.matrix_world = baked_matrix
+
+    # Delete the tracking empty — it has no purpose without the constraint
+    if target_empty and target_empty.type == 'EMPTY':
+        bpy.data.objects.remove(target_empty, do_unlink=True)
+
     return True

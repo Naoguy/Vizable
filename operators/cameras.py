@@ -119,8 +119,11 @@ class VIZABLE_OT_camera_clear_dof(bpy.types.Operator):
         cam_obj = context.scene.camera
         if cam_obj is None:
             return {'CANCELLED'}
+        focus_empty = cam_obj.data.dof.focus_object
         cam_obj.data.dof.focus_object = None
         cam_obj.data.dof.use_dof = False
+        if focus_empty and focus_empty.type == 'EMPTY':
+            bpy.data.objects.remove(focus_empty, do_unlink=True)
         return {'FINISHED'}
 
 
