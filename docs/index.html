@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vizable — KeyShot-style visualisation for Blender</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #161616;
+      --surface:   #1f1f1f;
+      --border:    #2e2e2e;
+      --accent:    #4a90d9;
+      --accent-h:  #3a7abf;
+      --text:      #e8e8e8;
+      --muted:     #888;
+      --tag-bg:    #2a2a2a;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 3.5rem 2rem 3rem;
+      text-align: center;
+    }
+    .logo-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      margin-bottom: 0.6rem;
+    }
+    .logo-mark {
+      width: 40px; height: 40px;
+      background: var(--accent);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .logo-mark svg { width: 22px; height: 22px; fill: #fff; }
+    h1 {
+      font-size: 2.4rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .tagline {
+      color: var(--muted);
+      font-size: 1.05rem;
+      margin-top: 0.4rem;
+    }
+    .version-badge {
+      display: inline-block;
+      margin-top: 1rem;
+      padding: 0.2em 0.7em;
+      background: var(--tag-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      letter-spacing: 0.03em;
+    }
+
+    /* ── Main layout ── */
+    main {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 3rem 2rem 5rem;
+    }
+
+    /* ── Install block ── */
+    .install-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 3rem;
+      text-align: center;
+    }
+    .install-block h2 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+    .install-block p {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .drag-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.85rem 1.6rem;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: grab;
+      user-select: none;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .drag-badge:hover  { background: var(--accent-h); }
+    .drag-badge:active { transform: scale(0.97); cursor: grabbing; }
+    .drag-badge svg    { width: 20px; height: 20px; flex-shrink: 0; }
+
+    .drag-hint {
+      margin-top: 0.9rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .manual-url {
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    .manual-url strong { color: var(--text); }
+    code {
+      background: var(--tag-bg);
+      border: 1px solid var(--border);
+      padding: 0.15em 0.5em;
+      border-radius: 4px;
+      font-size: 0.85em;
+      user-select: all;
+    }
+
+    /* ── Sections ── */
+    section { margin-bottom: 3rem; }
+    h2.section-title {
+      font-size: 1.15rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin-bottom: 1.2rem;
+      padding-bottom: 0.6rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* ── Steps ── */
+    .steps { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; }
+    .steps li {
+      display: flex;
+      gap: 0.9rem;
+      align-items: flex-start;
+    }
+    .step-num {
+      flex-shrink: 0;
+      width: 24px; height: 24px;
+      background: var(--tag-bg);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-top: 0.1rem;
+    }
+
+    /* ── Feature grid ── */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+    .feature-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.1rem 1.2rem;
+    }
+    .feature-card h3 {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .feature-card h3 .icon { font-size: 1rem; }
+    .feature-card p { font-size: 0.83rem; color: var(--muted); line-height: 1.5; }
+
+    /* ── Changelog ── */
+    .release {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+    .release-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.9rem 1.2rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .release-header .rel-version {
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+    .release-header .rel-date {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    .release-body { padding: 1rem 1.2rem; }
+    .release-body ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .release-body li {
+      font-size: 0.88rem;
+      color: var(--muted);
+      padding-left: 1.1rem;
+      position: relative;
+    }
+    .release-body li::before {
+      content: "—";
+      position: absolute;
+      left: 0;
+      color: var(--border);
+    }
+    .release-body li strong { color: var(--text); }
+
+    .changelog-group-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 0.9rem 0 0.4rem;
+    }
+    .changelog-group-title:first-child { margin-top: 0; }
+
+    /* ── Requirements ── */
+    .req-row {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .req-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.85rem;
+    }
+    .req-pill .label { color: var(--muted); font-size: 0.78rem; }
+    .req-pill .value { font-weight: 600; }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      text-align: center;
+      padding: 2rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    footer a { color: var(--muted); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo-row">
+    <div class="logo-mark">
+      <!-- Simple camera + light mark -->
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 7h2l1-2h10l1 2h2a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1zm8 9a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm0-2a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"/>
+      </svg>
+    </div>
+    <h1>Vizable</h1>
+  </div>
+  <p class="tagline">KeyShot-style product visualisation for Blender</p>
+  <span class="version-badge">v0.1.0 — Cameras &amp; Lights</span>
+</header>
+
+<main>
+
+  <!-- ── Install ── -->
+  <div class="install-block">
+    <h2>Add to Blender</h2>
+    <p>Drag the button below onto your Blender window, or click it to open the install prompt.</p>
+
+    <a class="drag-badge"
+       href="blender://repository/add?url=https://naoguy.github.io/Vizable/">
+      <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <!-- Blender-adjacent logo mark -->
+        <path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm0 3a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 14.5a7.5 7.5 0 0 1-6-3h12a7.5 7.5 0 0 1-6 3z"/>
+      </svg>
+      Drag to Blender — Add Repository
+    </a>
+
+    <p class="drag-hint">Requires Blender 5.1 or newer · Drag onto the Blender window, or click to install via your browser</p>
+
+    <div class="manual-url">
+      <strong>Manual install</strong> — Blender → Preferences → Extensions → Repositories → Add<br>
+      URL: <code>https://naoguy.github.io/Vizable/</code>
+    </div>
+  </div>
+
+  <!-- ── Getting started ── -->
+  <section>
+    <h2 class="section-title">Getting started</h2>
+    <ol class="steps">
+      <li>
+        <span class="step-num">1</span>
+        <span>Drag the button above onto the Blender window. Blender will prompt you to add the Vizable repository — confirm.</span>
+      </li>
+      <li>
+        <span class="step-num">2</span>
+        <span>In <strong>Preferences → Extensions</strong>, find Vizable and click <strong>Install</strong>.</span>
+      </li>
+      <li>
+        <span class="step-num">3</span>
+        <span>Open the <strong>3D Viewport</strong> and press <strong>N</strong> to open the sidebar. A <strong>Vizable</strong> tab will appear.</span>
+      </li>
+      <li>
+        <span class="step-num">4</span>
+        <span>Future updates show up automatically in the Extensions panel — click <strong>Update</strong> when prompted.</span>
+      </li>
+    </ol>
+  </section>
+
+  <!-- ── What's in v0.1.0 ── -->
+  <section>
+    <h2 class="section-title">What's in v0.1.0</h2>
+    <div class="features">
+      <div class="feature-card">
+        <h3><span class="icon">📷</span> Camera list</h3>
+        <p>All scene cameras in one place. Click to set active, rename, or delete — no digging through the outliner.</p>
+      </div>
+      <div class="feature-card">
+        <h3><span class="icon">🔲</span> Aspect presets</h3>
+        <p>16:9, 4:3, 1:1, 9:16, and more. Selecting a preset updates the render frame immediately.</p>
+      </div>
+      <div class="feature-card">
+        <h3><span class="icon">🎯</span> Camera tracking</h3>
+        <p>Click anywhere in the viewport to drop a track target. Toggle tracking on/off; removing it holds the camera's look direction.</p>
+      </div>
+      <div class="feature-card">
+        <h3><span class="icon">🌀</span> Depth of field</h3>
+        <p>Click to place your focal point exactly where you want it — including inside the product. Controls f-stop from the same panel.</p>
+      </div>
+      <div class="feature-card">
+        <h3><span class="icon">💡</span> Light controls</h3>
+        <p>All lights listed with one-click expand. Strength, colour, and type-appropriate softness in one place.</p>
+      </div>
+      <div class="feature-card">
+        <h3><span class="icon">🌡️</span> Colour temperature</h3>
+        <p>Drive lamp colour from a Kelvin value (1 000–10 000 K) or switch to raw colour — per light.</p>
+      </div>
+      <div class="feature-card">
+        <h3><span class="icon">🧭</span> Spherical positioning</h3>
+        <p>Position lights by elevation, azimuth, and distance around your subject rather than moving them by hand.</p>
+      </div>
+      <div class="feature-card">
+        <h3><span class="icon">➕</span> Quick-add lights</h3>
+        <p>Area, Point, Spot, and Sun — each added with sensible product-vis defaults and placed in a tidy collection.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Requirements ── -->
+  <section>
+    <h2 class="section-title">Requirements</h2>
+    <div class="req-row">
+      <div class="req-pill">
+        <span class="label">Blender</span>
+        <span class="value">5.1 or newer</span>
+      </div>
+      <div class="req-pill">
+        <span class="label">Renderer</span>
+        <span class="value">Cycles &amp; EEVEE</span>
+      </div>
+      <div class="req-pill">
+        <span class="label">Platform</span>
+        <span class="value">Windows · macOS · Linux</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Changelog ── -->
+  <section>
+    <h2 class="section-title">Changelog</h2>
+
+    <div class="release">
+      <div class="release-header">
+        <span class="rel-version">v0.1.0 — Cameras &amp; Lights</span>
+        <span class="rel-date">June 2026</span>
+      </div>
+      <div class="release-body">
+        <p class="changelog-group-title">Camera panel</p>
+        <ul>
+          <li><strong>Camera list</strong> — click any camera to set it active; rename and delete from the panel</li>
+          <li><strong>Lens controls</strong> — focal length, sensor width, clip start/end in one place</li>
+          <li><strong>Aspect presets</strong> — 16:9, 4:3, 3:2, 1:1, 9:16, 3:4; updates render resolution live</li>
+          <li><strong>Depth of field</strong> — click to place a precise focal-point empty; f-stop control; clear removes the empty</li>
+          <li><strong>Tracking</strong> — click-to-place track target; toggle on/off; removing bakes the look direction so the camera doesn't snap</li>
+          <li><strong>Save view as camera</strong> — captures the current viewport angle</li>
+        </ul>
+        <p class="changelog-group-title">Lights panel</p>
+        <ul>
+          <li><strong>Light list</strong> — all scene lights with expand/collapse; rename and delete from the panel</li>
+          <li><strong>Quick-add</strong> — Area, Point, Spot, Sun with product-vis defaults</li>
+          <li><strong>Colour temperature</strong> — Kelvin slider (1 000–10 000 K) drives lamp colour; toggle to raw colour picker</li>
+          <li><strong>Size/softness</strong> — type-aware: radius for Point/Spot, width/height for Area, angle for Sun</li>
+          <li><strong>Spherical positioning</strong> — elevation, azimuth, distance around a nominated subject object</li>
+          <li><strong>Tracking</strong> — same click-to-place mechanism as cameras</li>
+        </ul>
+        <p class="changelog-group-title">Cross-cutting</p>
+        <ul>
+          <li>Removing tracking or DOF deletes the associated empty — no orphaned objects</li>
+          <li>Retargeting moves the existing empty rather than creating a new one</li>
+          <li>Cameras and lights auto-placed in dedicated Vizable collections</li>
+        </ul>
+      </div>
+    </div>
+
+  </section>
+
+</main>
+
+<footer>
+  Vizable is built for Blender 5.1+ · <a href="https://github.com/Naoguy/Vizable">Source on GitHub</a>
+</footer>
+
+</body>
+</html>

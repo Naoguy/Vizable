@@ -1,12 +1,27 @@
 schema_version = "1.0.0"
 
-id = "vizable"
-version = "0.1.0"
-name = "Vizable"
-tagline = "KeyShot-style product visualisation"
-maintainer = "Guy Nao <guynao@gmail.com>"
-type = "add-on"
+id           = "vizable"
+version      = "0.1.0"
+name         = "Vizable"
+tagline      = "KeyShot-style product visualisation for Blender"
+maintainer   = "Guy Nao <guynao@gmail.com>"
+type         = "add-on"
+license      = ["SPDX:GPL-2.0-or-later"]
+website      = "https://naoguy.github.io/Vizable/"
 
 blender_version_min = "5.1.0"
 
 [permissions]
+
+[build]
+paths_exclude_pattern = [
+    "__pycache__/",
+    "*.pyc",
+    ".git/",
+    ".claude/",
+    "docs/",
+    "dist/",
+    "build.bat",
+    "CHANGELOG.md",
+    "Vizable_Foundation_Brief.md",
+]
