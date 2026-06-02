@@ -194,6 +194,36 @@ class VizableLightSettings(bpy.types.PropertyGroup):
     )
 
 
+class VizableRenderJob(bpy.types.PropertyGroup):
+    """One entry in the render queue."""
+    enabled: bpy.props.BoolProperty(
+        name="Enabled",
+        description="Include this job when rendering the full queue",
+        default=True,
+    )
+    output_name: bpy.props.StringProperty(
+        name="Output Name",
+        description="Filename (without extension) written into the output folder",
+        default="render",
+    )
+    camera_name: bpy.props.StringProperty(
+        name="Camera",
+        description="Name of the camera object to render from",
+        default="",
+    )
+    resolution: bpy.props.EnumProperty(
+        name="Resolution",
+        description="Pixel budget; actual width/height is resolved from the camera's aspect ratio",
+        items=[
+            ("720p",  "720p  — 1280 px",  "", 0),
+            ("1080p", "1080p — 1920 px",  "", 1),
+            ("1440p", "1440p — 2560 px",  "", 2),
+            ("4K",    "4K    — 3840 px",  "", 3),
+        ],
+        default="1080p",
+    )
+
+
 class VizableSceneProps(bpy.types.PropertyGroup):
     camera_list_index: bpy.props.IntProperty(default=0)
     active_light_name: bpy.props.StringProperty(
@@ -207,5 +237,20 @@ class VizableSceneProps(bpy.types.PropertyGroup):
         description="Object at the centre of the scene; used as the origin for spherical light positioning",
     )
 
+    # ── Render queue ───────────────────────────────────────────────────
+    render_jobs: bpy.props.CollectionProperty(type=VizableRenderJob)
+    active_render_job: bpy.props.IntProperty(
+        name="Active Render Job",
+        description="Index of the job currently expanded in the Render panel",
+        default=0,
+    )
+    render_output_dir: bpy.props.StringProperty(
+        name="Output Folder",
+        description="Directory where rendered images are saved "
+                    "(use // for a path relative to the .blend file)",
+        default="//renders/",
+        subtype='DIR_PATH',
+    )
 
-classes = [VizableCameraSettings, VizableLightSettings, VizableSceneProps]
+
+classes = [VizableCameraSettings, VizableLightSettings, VizableRenderJob, VizableSceneProps]
