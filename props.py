@@ -226,6 +226,11 @@ class VizableRenderJob(bpy.types.PropertyGroup):
 
 class VizableSceneProps(bpy.types.PropertyGroup):
     camera_list_index: bpy.props.IntProperty(default=0)
+    active_camera_name: bpy.props.StringProperty(
+        name="Active Camera (panel)",
+        description="Name of the camera currently expanded in the Cameras panel",
+        default="",
+    )
     active_light_name: bpy.props.StringProperty(
         name="Active Light",
         description="Name of the light currently expanded in the Lights panel",

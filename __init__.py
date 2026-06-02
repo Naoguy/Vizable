@@ -3,6 +3,7 @@ from . import props
 from .operators import cameras as cam_ops
 from .operators import empties as empty_ops
 from .operators import lights as light_ops
+from .operators import organise as organise_ops
 from .operators import render as render_ops
 from .panels import cameras as cam_panel
 from .panels import lights as light_panel
@@ -13,6 +14,7 @@ _classes = (
     + cam_ops.classes
     + empty_ops.classes
     + light_ops.classes
+    + organise_ops.classes
     + render_ops.classes
     + cam_panel.classes
     + light_panel.classes

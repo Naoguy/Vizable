@@ -1,5 +1,5 @@
 import bpy
-from ..utils.collections import ensure_collection, move_to_collection
+from ..utils.collections import ensure_collection, move_to_collection, COL_COLOR_CAMERAS
 from ..utils.constraints import bake_and_remove_constraint
 from .empties import TRACK_CONSTRAINT_NAME
 
@@ -16,9 +16,25 @@ class VIZABLE_OT_camera_new(bpy.types.Operator):
         bpy.ops.object.select_all(action='DESELECT')
         bpy.ops.object.camera_add()
         cam_obj = context.active_object
-        col = ensure_collection(CAMERAS_COLLECTION)
+        col = ensure_collection(CAMERAS_COLLECTION, color_tag=COL_COLOR_CAMERAS)
         move_to_collection(cam_obj, col)
         context.scene.camera = cam_obj
+        return {'FINISHED'}
+
+
+class VIZABLE_OT_camera_select(bpy.types.Operator):
+    """Expand or collapse this camera's settings in the panel"""
+    bl_idname = "vizable.camera_select"
+    bl_label = "Select Camera"
+    bl_options = {'INTERNAL'}
+
+    camera_name: bpy.props.StringProperty()
+
+    def execute(self, context):
+        current = context.scene.vizable.active_camera_name
+        context.scene.vizable.active_camera_name = (
+            "" if current == self.camera_name else self.camera_name
+        )
         return {'FINISHED'}
 
 
@@ -72,7 +88,7 @@ class VIZABLE_OT_save_view_as_camera(bpy.types.Operator):
         cam_obj = context.active_object
         context.scene.camera = cam_obj
         bpy.ops.view3d.camera_to_view()
-        col = ensure_collection(CAMERAS_COLLECTION)
+        col = ensure_collection(CAMERAS_COLLECTION, color_tag=COL_COLOR_CAMERAS)
         move_to_collection(cam_obj, col)
         return {'FINISHED'}
 
@@ -156,6 +172,7 @@ class VIZABLE_OT_camera_rename(bpy.types.Operator):
 classes = [
     VIZABLE_OT_camera_rename,
     VIZABLE_OT_camera_new,
+    VIZABLE_OT_camera_select,
     VIZABLE_OT_camera_set_active,
     VIZABLE_OT_camera_delete,
     VIZABLE_OT_save_view_as_camera,

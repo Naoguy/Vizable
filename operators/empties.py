@@ -1,7 +1,9 @@
 import bpy
 from bpy_extras import view3d_utils
+from ..utils.collections import ensure_collection, move_to_collection, COL_COLOR_TARGETS
 
-TRACK_CONSTRAINT_NAME = "Vizable Track"
+TRACK_CONSTRAINT_NAME  = "Vizable Track"
+TARGETS_COLLECTION     = "Vizable Targets"
 
 
 class VIZABLE_OT_place_empty(bpy.types.Operator):
@@ -109,6 +111,10 @@ class VIZABLE_OT_place_empty(bpy.types.Operator):
         bpy.ops.object.empty_add(type='SPHERE', radius=0.05, location=location)
         empty      = context.active_object
         empty.name = empty_name
+
+        col = ensure_collection(TARGETS_COLLECTION, color_tag=COL_COLOR_TARGETS)
+        move_to_collection(empty, col)
+
         return empty
 
     def _assign(self, empty):

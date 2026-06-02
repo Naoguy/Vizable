@@ -46,16 +46,19 @@ class VIZABLE_PT_lights(bpy.types.Panel):
 
         if not lights:
             layout.label(text="No lights in scene", icon='INFO')
-            return
+        else:
+            active_name = scene.vizable.active_light_name
 
-        active_name = scene.vizable.active_light_name
+            for light_obj in lights:
+                is_active = (light_obj.name == active_name)
+                box = layout.box()
+                self._draw_light_header(box, light_obj, is_active)
+                if is_active:
+                    self._draw_light_settings(box, context, light_obj)
 
-        for light_obj in lights:
-            is_active = (light_obj.name == active_name)
-            box = layout.box()
-            self._draw_light_header(box, light_obj, is_active)
-            if is_active:
-                self._draw_light_settings(box, context, light_obj)
+        # ── Organise footer ──────────────────────────────────────────────
+        layout.separator(factor=0.3)
+        layout.operator("vizable.organise_scene", text="Sort into Collections", icon='OUTLINER_COLLECTION')
 
     # ── Header row ──────────────────────────────────────────────────────
 

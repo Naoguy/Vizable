@@ -1,6 +1,6 @@
 import bpy
 import math
-from ..utils.collections import ensure_collection, move_to_collection
+from ..utils.collections import ensure_collection, move_to_collection, COL_COLOR_LIGHTS
 from ..utils.constraints import bake_and_remove_constraint
 from .empties import TRACK_CONSTRAINT_NAME
 
@@ -43,7 +43,7 @@ class VIZABLE_OT_light_add(bpy.types.Operator):
             if hasattr(light_obj.data, attr):
                 setattr(light_obj.data, attr, val)
 
-        col = ensure_collection(LIGHTS_COLLECTION)
+        col = ensure_collection(LIGHTS_COLLECTION, color_tag=COL_COLOR_LIGHTS)
         move_to_collection(light_obj, col)
 
         context.scene.vizable.active_light_name = light_obj.name
