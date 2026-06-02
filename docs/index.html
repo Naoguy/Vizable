@@ -297,21 +297,20 @@
   <!-- ── Install ── -->
   <div class="install-block">
     <h2>Add to Blender</h2>
-    <p>Drag the button below onto your Blender window, or click it to open the install prompt.</p>
+    <p>Click the button below to add the Vizable repository — Blender will open and prompt you to confirm.<br>
+       Once added, updates appear automatically in <strong>Preferences → Extensions</strong>.</p>
 
-    <div class="drag-badge"
-       draggable="true"
-       role="button"
-       tabindex="0"
-       id="drag-badge">
-      <!-- drag handle icon -->
+    <a class="drag-badge"
+       href="blender://repository/add?url=https://naoguy.github.io/Vizable/"
+       id="install-btn">
+      <!-- Blender-style extension icon -->
       <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-        <path d="M9 4a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm6 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2zM9 11a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm6 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2zM9 18a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm6 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+        <path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm0 3a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 14.5a7.5 7.5 0 0 1-6-3h12a7.5 7.5 0 0 1-6 3z"/>
       </svg>
-      Drag to Blender — Add Repository
-    </div>
+      Add Repository to Blender
+    </a>
 
-    <p class="drag-hint">Requires Blender 5.1 or newer · Drag onto the Blender window, or click to install via your browser</p>
+    <p class="drag-hint">Requires Blender 5.1 or newer · Opens Blender via the <code>blender://</code> URL handler</p>
 
     <div class="manual-url">
       <strong>Manual install</strong> — Blender → Preferences → Extensions → Repositories → Add<br>
@@ -325,7 +324,7 @@
     <ol class="steps">
       <li>
         <span class="step-num">1</span>
-        <span>Drag the button above onto the Blender window. Blender will prompt you to add the Vizable repository — confirm.</span>
+        <span>Click <strong>Add Repository to Blender</strong> above, or manually add <code>https://naoguy.github.io/Vizable/</code> in <strong>Preferences → Extensions → Repositories</strong>.</span>
       </li>
       <li>
         <span class="step-num">2</span>
@@ -445,40 +444,5 @@
   Vizable is built for Blender 5.1+ · <a href="https://github.com/Naoguy/Vizable">Source on GitHub</a>
 </footer>
 
-<script>
-  (function () {
-    var badge = document.getElementById('drag-badge');
-
-    // Plain HTTPS URL — this is what Blender reads from a drop's text/uri-list
-    // to recognise the repository and offer to add it.
-    var REPO_HTTPS = 'https://naoguy.github.io/Vizable/';
-
-    // blender:// URL — only works when Blender is registered as an OS URL handler.
-    // Used for the click path; the browser hands the URL to the OS which opens Blender.
-    var REPO_BLENDER = 'blender://repository/add?url=' + encodeURIComponent(REPO_HTTPS);
-
-    // DRAG: give Blender the plain HTTPS repository URL.
-    // Blender reads text/uri-list when something is dropped on its window and
-    // recognises the https:// repository index URL to add it as a source.
-    badge.addEventListener('dragstart', function (e) {
-      e.dataTransfer.effectAllowed = 'copy';
-      e.dataTransfer.setData('text/uri-list', REPO_HTTPS);
-      e.dataTransfer.setData('text/plain', REPO_HTTPS);
-    });
-
-    // CLICK: attempt to open via the blender:// OS URL handler.
-    badge.addEventListener('click', function () {
-      window.location.href = REPO_BLENDER;
-    });
-
-    // Allow keyboard activation (Enter / Space) for accessibility.
-    badge.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        window.location.href = REPO_BLENDER;
-      }
-    });
-  })();
-</script>
 </body>
 </html>
