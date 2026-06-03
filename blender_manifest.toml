@@ -1,7 +1,7 @@
 schema_version = "1.0.0"
 
 id           = "vizable"
-version      = "0.2.1"
+version      = "0.2.2"
 name         = "Vizable"
 tagline      = "KeyShot-style product visualisation for Blender"
 maintainer   = "Guy Nao <guynao@gmail.com>"
