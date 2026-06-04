@@ -1,5 +1,6 @@
 import bpy
 from ..utils.collections import ensure_collection, move_to_collection, COL_COLOR_CAMERAS
+from ..props import _apply_aspect_to_scene
 from ..utils.constraints import bake_and_remove_constraint
 from .empties import TRACK_CONSTRAINT_NAME
 
@@ -50,6 +51,8 @@ class VIZABLE_OT_camera_set_active(bpy.types.Operator):
         obj = bpy.data.objects.get(self.camera_name)
         if obj and obj.type == 'CAMERA':
             context.scene.camera = obj
+            # Apply this camera's stored aspect preset to the scene resolution
+            _apply_aspect_to_scene(context.scene, obj.data.vizable.aspect_preset)
         return {'FINISHED'}
 
 

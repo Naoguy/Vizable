@@ -73,23 +73,32 @@ def _find_camera_obj(cam_settings):
 def _update_aspect(self, context):
     """Apply the selected aspect preset to the scene render resolution.
 
-    Only fires for the active scene camera so switching to a different camera
-    automatically updates the viewport frame to match that camera's aspect.
-    Keeps the longer axis at 1920 px; the render panel will later add
-    resolution-budget presets on top of this.
+    Applies whenever the preset changes on any camera — if the camera isn't
+    currently the active scene camera the change is stored but the resolution
+    is only updated when that camera is set active (see camera_set_active).
+    Keeps the longer axis at 1920 px as a preview resolution; the render panel
+    applies its own resolution budget presets at render time.
     """
     if context is None:
         return
     obj = _find_camera_obj(self)
-    if obj is None or context.scene.camera != obj:
+    if obj is None:
         return
-    w, h = ASPECT_VALUES[self.aspect_preset]
+    # Only update the scene resolution if this is the active camera
+    if context.scene.camera != obj:
+        return
+    _apply_aspect_to_scene(context.scene, self.aspect_preset)
+
+
+def _apply_aspect_to_scene(scene, aspect_preset):
+    """Write the aspect preset's resolution onto the scene render settings."""
+    w, h = ASPECT_VALUES[aspect_preset]
     if w >= h:
-        context.scene.render.resolution_x = 1920
-        context.scene.render.resolution_y = round(1920 * h / w)
+        scene.render.resolution_x = 1920
+        scene.render.resolution_y = round(1920 * h / w)
     else:
-        context.scene.render.resolution_y = 1920
-        context.scene.render.resolution_x = round(1920 * w / h)
+        scene.render.resolution_y = 1920
+        scene.render.resolution_x = round(1920 * w / h)
 
 
 def _find_light_obj(light_settings):

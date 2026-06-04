@@ -7,7 +7,7 @@
       "id": "vizable",
       "name": "Vizable",
       "tagline": "KeyShot-style product visualisation for Blender",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "type": "add-on",
       "maintainer": "Guy Nao <guynao@gmail.com>",
       "license": [
@@ -16,9 +16,9 @@
       "blender_version_min": "5.1.0",
       "website": "https://naoguy.github.io/Vizable/",
       "permissions": {},
-      "archive_url": "./vizable-0.2.2.zip",
-      "archive_size": 32068,
-      "archive_hash": "sha256:17f41a4e13f382e61d3451bc8ed37ed42c71fadb8ce7aa5e310a6ce84c132c6d"
+      "archive_url": "./vizable-0.2.3.zip",
+      "archive_size": 32218,
+      "archive_hash": "sha256:b3c2f5c833b34a73cae6690dfddd41eb29b1dac44ca2e8d1bbfa9bd6f4f792cf"
     }
   ]
 }
