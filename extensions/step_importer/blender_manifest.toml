@@ -1,0 +1,19 @@
+schema_version = "1.0.0"
+
+id = "vizable_step_importer"
+name = "Vizable: STEP Importer"
+tagline = "Import STEP/STP with real part names, scale & up-axis fix"
+version = "1.4.0"
+type = "add-on"
+
+blender_version_min = "5.1.0"
+
+maintainer = "Guy Nao <guynao@gmail.com>"
+website = "https://naoguy.github.io/Vizable/"
+
+tags = ["Import-Export", "Mesh", "Scene"]
+
+license = ["SPDX:GPL-2.0-or-later"]
+
+[permissions]
+files = "Read STEP/STP files and write a temporary GLB during conversion"

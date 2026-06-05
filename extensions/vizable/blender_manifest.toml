@@ -17,11 +17,4 @@ blender_version_min = "5.1.0"
 paths_exclude_pattern = [
     "__pycache__/",
     "*.pyc",
-    ".git/",
-    ".claude/",
-    "docs/",
-    "dist/",
-    "build.bat",
-    "CHANGELOG.md",
-    "Vizable_Foundation_Brief.md",
 ]

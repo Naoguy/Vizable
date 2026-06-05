@@ -17,8 +17,33 @@
       "website": "https://naoguy.github.io/Vizable/",
       "permissions": {},
       "archive_url": "./vizable-0.2.3.zip",
-      "archive_size": 32218,
-      "archive_hash": "sha256:b3c2f5c833b34a73cae6690dfddd41eb29b1dac44ca2e8d1bbfa9bd6f4f792cf"
+      "archive_size": 19671,
+      "archive_hash": "sha256:4ae46aa061fe89347e10c8a3c7e7ead1320a472d0759f4c996adce5fdcd92393"
+    },
+    {
+      "schema_version": "1.0.0",
+      "id": "vizable_step_importer",
+      "name": "Vizable: STEP Importer",
+      "tagline": "Import STEP/STP with real part names, scale & up-axis fix",
+      "version": "1.4.0",
+      "type": "add-on",
+      "maintainer": "Guy Nao <guynao@gmail.com>",
+      "license": [
+        "SPDX:GPL-2.0-or-later"
+      ],
+      "blender_version_min": "5.1.0",
+      "website": "https://naoguy.github.io/Vizable/",
+      "permissions": {
+        "files": "Read STEP/STP files and write a temporary GLB during conversion"
+      },
+      "tags": [
+        "Import-Export",
+        "Mesh",
+        "Scene"
+      ],
+      "archive_url": "./vizable_step_importer-1.4.0.zip",
+      "archive_size": 14641882,
+      "archive_hash": "sha256:89a47a1e16cf8512356624e6dd57d72a03333ed13f3dfec1f6aff82403fd0140"
     }
   ]
 }

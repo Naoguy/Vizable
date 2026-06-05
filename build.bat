@@ -1,9 +1,10 @@
 @echo off
 :: ─────────────────────────────────────────────────────────────────────────────
-:: Vizable — build + publish script
+:: Vizable suite — build + publish script
 ::
-:: Builds the extension zip and regenerates the GitHub Pages repo index.
-:: Run this from the repo root each time you want to cut a new release.
+:: Builds EVERY extension under extensions\ into docs\, then regenerates the
+:: GitHub Pages extension-repository index that hosts them all. Your team adds
+:: one repo URL in Blender and can install/update any tool individually.
 ::
 :: Usage:  build.bat
 :: ─────────────────────────────────────────────────────────────────────────────
@@ -20,20 +21,23 @@ if not exist %BLENDER% (
     exit /b 1
 )
 
-:: Ensure the docs folder exists
 if not exist docs mkdir docs
 
 echo.
-echo  [1/2] Building extension zip...
-%BLENDER% --command extension build --source-dir . --output-dir docs
-if %errorlevel% neq 0 (
-    echo  Build failed.
-    pause
-    exit /b 1
+echo  Building all extensions under extensions\ ...
+for /d %%E in (extensions\*) do (
+    echo.
+    echo   - %%~nxE
+    %BLENDER% --command extension build --source-dir "%%E" --output-dir docs
+    if errorlevel 1 (
+        echo  Build failed for %%E
+        pause
+        exit /b 1
+    )
 )
 
 echo.
-echo  [2/2] Generating repository index...
+echo  Generating repository index...
 %BLENDER% --command extension server-generate --repo-dir docs
 if %errorlevel% neq 0 (
     echo  server-generate failed.
